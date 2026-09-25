@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PYTHON // HACKER ARENA - BY VIDIT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#030712',
+                            card: '#090d16',
+                            green: '#00ff66',
+                            cyan: '#00f3ff',
+                            pink: '#ff007f',
+                            purple: '#bc13fe',
+                            yellow: '#ffe600',
+                            border: 'rgba(0, 243, 255, 0.2)'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['"Share Tech Mono"', 'monospace'],
+                        code: ['"Fira Code"', 'monospace'],
+                        header: ['Orbitron', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scanlines and CRT Distortion */
+        body {
+            background-color: #030712;
+            color: #00f3ff;
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 0, 0, 0.3) 50%,
+                rgba(0, 0, 0, 0.3)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 99;
+            opacity: 0.6;
+        }
+
+        /* Glitch Animation Effects */
+        .glitch-text {
+            text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff, 0 0 40px #00f3ff;
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 #ff007f, -2px 0 #00ff66; }
+            25% { text-shadow: -2px 0 #ff007f, 2px 0 #00ff66; }
+            50% { text-shadow: 2px -2px #00f3ff, -2px 2px #ffe600; }
+            75% { text-shadow: -1px 2px #ff007f, 1px -2px #00ff66; }
+            100% { text-shadow: 2px 0 #ff007f, -2px 0 #00ff66; }
+        }
+
+        /* Cyber Glow Shadows */
+        .glow-green { box-shadow: 0 0 20px rgba(0, 255, 102, 0.35); border-color: #00ff66; }
+        .glow-cyan { box-shadow: 0 0 20px rgba(0, 243, 255, 0.35); border-color: #00f3ff; }
+        .glow-pink { box-shadow: 0 0 20px rgba(255, 0, 127, 0.35); border-color: #ff007f; }
+        .glow-purple { box-shadow: 0 0 20px rgba(188, 19, 254, 0.35); border-color: #bc13fe; }
+        .glow-yellow { box-shadow: 0 0 20px rgba(255, 230, 0, 0.35); border-color: #ffe600; }
+
+        .text-glow-green { text-shadow: 0 0 12px #00ff66; }
+        .text-glow-cyan { text-shadow: 0 0 12px #00f3ff; }
+        .text-glow-pink { text-shadow: 0 0 12px #ff007f; }
+        .text-glow-purple { text-shadow: 0 0 12px #bc13fe; }
+        .text-glow-yellow { text-shadow: 0 0 12px #ffe600; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #00f3ff; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ff007f; }
+
+        /* Code Block Copy Animation */
+        .copy-success {
+            background-color: #00ff66 !important;
+            color: #030712 !important;
+            box-shadow: 0 0 15px #00ff66;
+        }
+
+        /* Pulse Animations */
+        @keyframes cyberPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.98); }
+        }
+        .animate-cyber-pulse { animation: cyberPulse 3s infinite ease-in-out; }
+    </style>
+</head>
+<body class="relative min-h-screen bg-cyber-bg text-cyber-cyan selection:bg-cyber-pink selection:text-white">
+
+    <div class="scanline"></div>
+
+    <div id="loadingScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-between bg-black p-8 transition-opacity duration-700">
+        <div class="flex-1 flex flex-col items-center justify-center w-full max-w-md text-center">
+            <!-- Cyber Spinner -->
+            <div class="relative w-32 h-32 mb-8">
+                <div class="absolute inset-0 border-4 border-cyber-cyan/20 rounded-full animate-ping"></div>
+                <div class="absolute inset-0 border-t-4 border-b-4 border-cyber-green rounded-full animate-spin" style="animation-duration: 1.5s;"></div>
+                <div class="absolute inset-2 border-r-4 border-l-4 border-cyber-pink rounded-full animate-spin" style="animation-duration: 1s; animation-direction: reverse;"></div>
+                <div class="absolute inset-0 flex items-center justify-center font-header font-black text-2xl text-cyber-yellow" id="loadPercent">0%</div>
+            </div>
+
+            <!-- Glitch Title -->
+            <h1 class="font-header text-2xl md:text-3xl font-bold tracking-widest text-cyber-cyan glitch-text mb-2">NEURAL LINK INITIALIZING</h1>
+            <p id="loadingStatus" class="text-sm font-mono text-cyber-green h-6">ESTABLISHING ENCRYPTED CONNECTION...</p>
+
+            <!-- Hacker Progress Bar -->
+            <div class="w-full bg-gray-900 h-3 rounded-full overflow-hidden border border-cyber-cyan/40 mt-6 p-0.5 shadow-[0_0_15px_rgba(0,243,255,0.3)]">
+                <div id="progressBar" class="bg-gradient-to-r from-cyber-green via-cyber-cyan to-cyber-pink h-full w-0 transition-all duration-100 rounded-full"></div>
+            </div>
+        </div>
+
+        <!-- Prominent VIDIT Credit -->
+        <div class="text-center border-t border-cyber-cyan/30 pt-4 w-full">
+            <span class="text-xs tracking-widest text-gray-500 uppercase block mb-1">SYSTEM ARCHITECT & DESIGNER</span>
+            <div class="text-xl md:text-2xl font-header font-black tracking-widest text-cyber-pink text-glow-pink animate-pulse">
+                MADE BY VIDIT
+            </div>
+        </div>
+    </div>
+
+    <section id="heroSection" class="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden border-b border-cyber-cyan/20">
+        <canvas id="matrixCanvas" class="absolute inset-0 w-full h-full opacity-40"></canvas>
+        
+        <div class="relative z-10 text-center px-4 max-w-4xl">
+            <div class="inline-block px-4 py-1 mb-4 rounded-full bg-cyber-pink/10 border border-cyber-pink/40 text-cyber-pink text-xs tracking-widest font-mono font-bold animate-bounce">
+                SYSTEM V3.12 // SECURE TERMINAL READY
+            </div>
+            
+            <h1 class="font-header text-4xl sm:text-6xl md:text-7xl font-black tracking-wider text-white mb-6 glitch-text">
+                PYTHON <span class="text-cyber-green">HACKER</span> ARENA
+            </h1>
+            
+            <p class="font-mono text-lg md:text-2xl text-cyber-cyan max-w-2xl mx-auto mb-10 leading-relaxed text-glow-cyan">
+                MASTER THE CORE ALGORITHMS. UNLOCK NEURAL CODE. BECOME UNSTOPPABLE.
+            </p>
+
+            <!-- Scroll Indicator -->
+            <div class="inline-flex flex-col items-center cursor-pointer group" onclick="scrollToArena()">
+                <span class="font-header text-sm tracking-widest text-cyber-yellow group-hover:text-cyber-green transition-colors text-glow-yellow mb-3">
+                    SCROLL DOWN TO ENTER THE PYTHON ARENA
+                </span>
+                <div class="w-8 h-12 border-2 border-cyber-yellow group-hover:border-cyber-green rounded-full flex items-start justify-center p-2 shadow-[0_0_15px_rgba(255,230,0,0.4)] transition-all">
+                    <div class="w-1.5 h-3 bg-cyber-yellow group-hover:bg-cyber-green rounded-full animate-bounce"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-4 left-6 text-xs text-cyber-green/60 font-mono hidden sm:block">
+            STATUS: ACTIVE // PORT 8080 OPEN
+        </div>
+        <div class="absolute bottom-4 right-6 text-xs text-cyber-pink/80 font-mono font-bold">
+            ARCHITECT: VIDIT
+        </div>
+    </section>
+
+    <section id="arenaSection" class="relative min-h-screen py-20 px-4 max-w-7xl mx-auto flex flex-col items-center">
+        
+        <!-- Interactive Physics Welcome Box Canvas Wrapper -->
+        <div class="w-full max-w-3xl h-64 mb-16 relative">
+            <canvas id="physicsCanvas" class="w-full h-full rounded-2xl border border-cyber-cyan/30 shadow-[0_0_30px_rgba(0,0,0,0.8)]"></canvas>
+            <div class="absolute top-2 right-4 text-[10px] text-cyber-cyan/50 font-mono tracking-widest">
+                PHYSICS SIMULATION: GRAVITY + RECOIL DAMPENING
+            </div>
+        </div>
+
+        <div class="text-center mb-12">
+            <h2 class="font-header text-3xl md:text-5xl font-extrabold text-white tracking-widest text-glow-cyan mb-2">
+                SELECT PROTOCOL MODULE
+            </h2>
+            <p class="text-cyber-green font-mono text-sm tracking-widest">
+                CLICK ANY CYBER MODULE TO LAUNCH FULL NEURAL DATASET
+            </p>
+        </div>
+
+        <!-- Topic Cards Container -->
+        <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
+            
+            <!-- CARD 1 -->
+            <div id="card1" onclick="openModule(1)" class="group relative bg-cyber-card border-2 border-cyber-green rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:-translate-y-2 glow-green overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-24 h-24 bg-cyber-green/10 rounded-full blur-xl group-hover:bg-cyber-green/30 transition-all"></div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="font-header text-xs px-3 py-1 bg-cyber-green/20 text-cyber-green border border-cyber-green/40 rounded-md font-bold">MODULE // 01</span>
+                    <i class="fa-solid fa-terminal text-2xl text-cyber-green group-hover:rotate-12 transition-transform"></i>
+                </div>
+                <h3 class="font-header text-xl font-bold text-white mb-2 group-hover:text-cyber-green transition-colors">
+                    01 // INTRODUCTION TO PYTHON
+                </h3>
+                <p class="text-xs text-gray-400 font-mono leading-relaxed mb-6">
+                    Core philosophy, high-level dynamics, dynamic typing, memory management & why hackers choose Python.
+                </p>
+                <div class="flex items-center justify-between text-xs font-mono border-t border-gray-800 pt-4 text-cyber-green">
+                    <span>LAUNCH TERMINAL</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                </div>
+            </div>
+
+            <!-- CARD 2 -->
+            <div id="card2" onclick="openModule(2)" class="group relative bg-cyber-card border-2 border-cyber-cyan rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:-translate-y-2 glow-cyan overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-24 h-24 bg-cyber-cyan/10 rounded-full blur-xl group-hover:bg-cyber-cyan/30 transition-all"></div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="font-header text-xs px-3 py-1 bg-cyber-cyan/20 text-cyber-cyan border border-cyber-cyan/40 rounded-md font-bold">MODULE // 02</span>
+                    <i class="fa-solid fa-keyboard text-2xl text-cyber-cyan group-hover:rotate-12 transition-transform"></i>
+                </div>
+                <h3 class="font-header text-xl font-bold text-white mb-2 group-hover:text-cyber-cyan transition-colors">
+                    02 // TAKING INPUT & OUTPUT
+                </h3>
+                <p class="text-xs text-gray-400 font-mono leading-relaxed mb-6">
+                    Mastering user input, type casting, multi-line buffer splits, f-strings & formatted stdout streams.
+                </p>
+                <div class="flex items-center justify-between text-xs font-mono border-t border-gray-800 pt-4 text-cyber-cyan">
+                    <span>LAUNCH TERMINAL</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                </div>
+            </div>
+
+            <!-- CARD 3 -->
+            <div id="card3" onclick="openModule(3)" class="group relative bg-cyber-card border-2 border-cyber-pink rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:-translate-y-2 glow-pink overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-24 h-24 bg-cyber-pink/10 rounded-full blur-xl group-hover:bg-cyber-pink/30 transition-all"></div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="font-header text-xs px-3 py-1 bg-cyber-pink/20 text-cyber-pink border border-cyber-pink/40 rounded-md font-bold">MODULE // 03</span>
+                    <i class="fa-solid fa-calculator text-2xl text-cyber-pink group-hover:rotate-12 transition-transform"></i>
+                </div>
+                <h3 class="font-header text-xl font-bold text-white mb-2 group-hover:text-cyber-pink transition-colors">
+                    03 // MATH & LOGIC OPERATORS
+                </h3>
+                <p class="text-xs text-gray-400 font-mono leading-relaxed mb-6">
+                    Arithmetic, bitwise shifting, logical gates (AND/OR/NOT), modulo arithmetic & math library ops.
+                </p>
+                <div class="flex items-center justify-between text-xs font-mono border-t border-gray-800 pt-4 text-cyber-pink">
+                    <span>LAUNCH TERMINAL</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                </div>
+            </div>
+
+            <!-- CARD 4 -->
+            <div id="card4" onclick="openModule(4)" class="group relative bg-cyber-card border-2 border-cyber-purple rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:-translate-y-2 glow-purple overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-24 h-24 bg-cyber-purple/10 rounded-full blur-xl group-hover:bg-cyber-purple/30 transition-all"></div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="font-header text-xs px-3 py-1 bg-cyber-purple/20 text-cyber-purple border border-cyber-purple/40 rounded-md font-bold">MODULE // 04</span>
+                    <i class="fa-solid fa-arrows-spin text-2xl text-cyber-purple group-hover:rotate-12 transition-transform"></i>
+                </div>
+                <h3 class="font-header text-xl font-bold text-white mb-2 group-hover:text-cyber-purple transition-colors">
+                    04 // LOOPING & ITERATION
+                </h3>
+                <p class="text-xs text-gray-400 font-mono leading-relaxed mb-6">
+                    For/While loops, range step dynamics, break/continue control, loop-else & list comprehensions.
+                </p>
+                <div class="flex items-center justify-between text-xs font-mono border-t border-gray-800 pt-4 text-cyber-purple">
+                    <span>LAUNCH TERMINAL</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                </div>
+            </div>
+
+            <!-- CARD 5 -->
+            <div id="card5" onclick="openModule(5)" class="group relative bg-cyber-card border-2 border-cyber-yellow rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:-translate-y-2 glow-yellow md:col-span-2 lg:col-span-1 overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-24 h-24 bg-cyber-yellow/10 rounded-full blur-xl group-hover:bg-cyber-yellow/30 transition-all"></div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="font-header text-xs px-3 py-1 bg-cyber-yellow/20 text-cyber-yellow border border-cyber-yellow/40 rounded-md font-bold">MODULE // 05</span>
+                    <i class="fa-solid fa-code text-2xl text-cyber-yellow group-hover:rotate-12 transition-transform"></i>
+                </div>
+                <h3 class="font-header text-xl font-bold text-white mb-2 group-hover:text-cyber-yellow transition-colors">
+                    05 // BUILT-IN & CUSTOM FUNCTIONS
+                </h3>
+                <p class="text-xs text-gray-400 font-mono leading-relaxed mb-6">
+                    def statements, *args, **kwargs, Lambda expressions, map/filter/zip & built-in execution tools.
+                </p>
+                <div class="flex items-center justify-between text-xs font-mono border-t border-gray-800 pt-4 text-cyber-yellow">
+                    <span>LAUNCH TERMINAL</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div id="readerModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-4 md:p-6 transition-all duration-300">
+        <div class="relative w-full max-w-5xl h-[92vh] bg-cyber-card border-2 border-cyber-cyan rounded-2xl flex flex-col shadow-[0_0_50px_rgba(0,243,255,0.3)] overflow-hidden">
+            
+            <!-- Terminal Header Bar -->
+            <div class="bg-gray-950 px-4 py-3 border-b border-cyber-cyan/30 flex items-center justify-between select-none shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="flex space-x-1.5">
+                        <div class="w-3 h-3 rounded-full bg-red-500 cursor-pointer" onclick="closeModule()"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <span id="modalHeaderTitle" class="font-mono text-xs md:text-sm text-cyber-cyan font-bold tracking-widest pl-2 border-l border-gray-800">
+                        [ PYTHON 3.12 TERMINAL // CORE_READER.PY ]
+                    </span>
+                </div>
+                <button onclick="closeModule()" class="text-gray-400 hover:text-cyber-pink transition-colors px-2 py-1 text-sm font-mono">
+                    <i class="fa-solid fa-xmark mr-1"></i> CLOSE [ESC]
+                </button>
+            </div>
+
+            <!-- Terminal Body Container -->
+            <div id="modalContent" class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 space-y-8 text-gray-200 font-mono">
+                <!-- Dynamic Content Hydrated via JavaScript -->
+            </div>
+
+            <!-- Terminal Footer -->
+            <div class="bg-gray-950 px-6 py-2 border-t border-cyber-cyan/30 flex items-center justify-between text-xs text-gray-500 font-mono shrink-0">
+                <span>STATUS: READ_ONLY_BUFFER</span>
+                <span class="text-cyber-pink font-bold">SYSTEM BY VIDIT</span>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="w-full border-t border-cyber-cyan/20 bg-black py-8 px-4 text-center text-sm font-mono text-gray-400">
+        <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <span class="text-cyber-cyan font-header font-bold text-base">PYTHON HACKER ARENA</span>
+                <p class="text-xs text-gray-500 mt-1">Interactive Cybernetic Learning Environment</p>
+            </div>
+            <div class="text-lg font-header font-black text-cyber-pink text-glow-pink">
+                MADE WITH <i class="fa-solid fa-heart text-red-500 animate-ping"></i> BY VIDIT
+            </div>
+            <div class="text-xs text-cyber-green">
+                EST. 2026 // ALL RIGHTS RESERVED
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* =================================================================
+           1. MATRIX DIGITAL RAIN CANVAS EFFECT
+        ================================================================== */
+        const matrixCanvas = document.getElementById('matrixCanvas');
+        const mCtx = matrixCanvas.getContext('2d');
+
+        function resizeMatrix() {
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+        }
+        resizeMatrix();
+        window.addEventListener('resize', resizeMatrix);
+
+        const matrixChars = "010101010101PYTHONHACKERNEURALMATRIXCORE_XYZVAR_IF_ELSE_FOR_WHILE_DEF";
+        const fontSize = 14;
+        const columns = Math.floor(window.innerWidth / fontSize) + 1;
+        const drops = Array(columns).fill(1);
+
+        function drawMatrix() {
+            mCtx.fillStyle = 'rgba(3, 7, 18, 0.1)';
+            mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+
+            mCtx.fillStyle = '#00ff66';
+            mCtx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+                mCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 35);
+
+        /* =================================================================
+           2. 3-SECOND LOADING SCREEN CONTROLLER WITH EXPLICIT COUNTDOWN
+        ================================================================== */
+        const loadingScreen = document.getElementById('loadingScreen');
+        const loadPercent = document.getElementById('loadPercent');
+        const progressBar = document.getElementById('progressBar');
+        const loadingStatus = document.getElementById('loadingStatus');
+
+        const statuses = [
+            "DECRYPTING PYTHON CORE...",
+            "INITIALIZING NEURAL LINK...",
+            "LOADING PHYSICS ENGINE...",
+            "CONFIGURING CYBER ARENA...",
+            "ACCESS GRANTED!"
+        ];
+
+        let loadProgress = 0;
+        const startTime = Date.now();
+        const duration = 3000; // 3 seconds exact
+
+        const loadInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            loadProgress = Math.min(100, Math.floor((elapsed / duration) * 100));
+
+            loadPercent.innerText = loadProgress + '%';
+            progressBar.style.width = loadProgress + '%';
+
+            const statusIdx = Math.min(statuses.length - 1, Math.floor((loadProgress / 100) * statuses.length));
+            loadingStatus.innerText = statuses[statusIdx];
+
+            if (elapsed >= duration) {
+                clearInterval(loadInterval);
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        triggerCardProjectiles();
+                    }, 700);
+                }, 100);
+            }
+        }, 30);
+
+        function scrollToArena() {
+            document.getElementById('arenaSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        /* =================================================================
+           3. PHYSICS SIMULATION: GRAVITY & BOUNCE FALLING WELCOME BOX
+        ================================================================== */
+        const pCanvas = document.getElementById('physicsCanvas');
+        const pCtx = pCanvas.getContext('2d');
+
+        function resizePhysicsCanvas() {
+            pCanvas.width = pCanvas.parentElement.clientWidth;
+            pCanvas.height = pCanvas.parentElement.clientHeight;
+        }
+        resizePhysicsCanvas();
+        window.addEventListener('resize', resizePhysicsCanvas);
+
+        // Physics State Variables
+        let box = {
+            x: 0,
+            y: -100,
+            width: 320,
+            height: 90,
+            vy: 0,
+            gravity: 0.8,
+            bounceDampening: 0.55,
+            isStatic: false,
+            typedText: "",
+            fullText: "WELCOME TO WORLD OF PYTHON",
+            charIndex: 0
+        };
+
+        let hasDropped = false;
+
+        function startPhysicsDrop() {
+            if (hasDropped) return;
+            hasDropped = true;
+            box.x = (pCanvas.width - box.width) / 2;
+            box.y = -100;
+            box.vy = 2;
+            requestAnimationFrame(updatePhysics);
+        }
+
+        function updatePhysics() {
+            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+
+            // Ground Line Y
+            const groundY = pCanvas.height - box.height - 20;
+
+            if (!box.isStatic) {
+                box.vy += box.gravity;
+                box.y += box.vy;
+
+                // Collision with ground
+                if (box.y >= groundY) {
+                    box.y = groundY;
+                    box.vy = -box.vy * box.bounceDampening;
+
+                    // Stop condition
+                    if (Math.abs(box.vy) < 1) {
+                        box.isStatic = true;
+                        box.y = groundY;
+                        startTypingInBox();
+                    }
+                }
+            }
+
+            // Draw Heavy Cyber Metal Box
+            pCtx.save();
+            
+            // Outer Glow
+            pCtx.shadowColor = box.isStatic ? '#00ff66' : '#00f3ff';
+            pCtx.shadowBlur = box.isStatic ? 25 : 10;
+
+            // Box Fill
+            const gradient = pCtx.createLinearGradient(box.x, box.y, box.x, box.y + box.height);
+            gradient.addColorStop(0, '#0d1527');
+            gradient.addColorStop(1, '#050a14');
+            pCtx.fillStyle = gradient;
+            pCtx.fillRect(box.x, box.y, box.width, box.height);
+
+            // Box Border
+            pCtx.strokeStyle = box.isStatic ? '#00ff66' : '#00f3ff';
+            pCtx.lineWidth = 3;
+            pCtx.strokeRect(box.x, box.y, box.width, box.height);
+
+            // Decorative Corner Screws/Bolts
+            pCtx.fillStyle = box.isStatic ? '#00ff66' : '#ff007f';
+            pCtx.fillRect(box.x + 6, box.y + 6, 6, 6);
+            pCtx.fillRect(box.x + box.width - 12, box.y + 6, 6, 6);
+            pCtx.fillRect(box.x + 6, box.y + box.height - 12, 6, 6);
+            pCtx.fillRect(box.x + box.width - 12, box.y + box.height - 12, 6, 6);
+
+            // Header Label inside box
+            pCtx.shadowBlur = 0;
+            pCtx.fillStyle = '#ff007f';
+            pCtx.font = 'bold 10px Orbitron';
+            pCtx.fillText("SYSTEM // NEURAL_WELCOME", box.x + 18, box.y + 24);
+
+            // Typing Text inside box
+            pCtx.fillStyle = '#ffffff';
+            pCtx.font = 'bold 15px "Share Tech Mono"';
+            pCtx.fillText(box.typedText + (box.charIndex < box.fullText.length ? "_" : ""), box.x + 18, box.y + 55);
+
+            pCtx.restore();
+
+            if (!box.isStatic || box.charIndex <= box.fullText.length) {
+                requestAnimationFrame(updatePhysics);
+            }
+        }
+
+        function startTypingInBox() {
+            const typingTimer = setInterval(() => {
+                if (box.charIndex < box.fullText.length) {
+                    box.typedText += box.fullText.charAt(box.charIndex);
+                    box.charIndex++;
+                } else {
+                    clearInterval(typingTimer);
+                }
+            }, 60);
+        }
+
+        // Trigger physics drop when scrolled into view
+        const arenaObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    startPhysicsDrop();
+                }
+            });
+        }, { threshold: 0.2 });
+        arenaObserver.observe(document.getElementById('arenaSection'));
+
+        /* =================================================================
+           4. PROJECTILE MOTION ENTRANCE ANIMATIONS FOR TOPIC CARDS
+        ================================================================== */
+        function triggerCardProjectiles() {
+            const cardIds = ['card1', 'card2', 'card3', 'card4', 'card5'];
+            
+            // Define Projectile Motion Trajectories using CSS Keyframes dynamically
+            const keyframes = [
+                // Card 1: Top-left parabola
+                `@keyframes proj1 { 0% { transform: translate(-300px, -300px) rotate(-30deg); opacity: 0; } 70% { transform: translate(20px, 20px) rotate(5deg); opacity: 1; } 100% { transform: translate(0,0) rotate(0); opacity: 1; } }`,
+                // Card 2: Bottom-left arc
+                `@keyframes proj2 { 0% { transform: translate(-300px, 300px) rotate(30deg); opacity: 0; } 70% { transform: translate(20px, -20px) rotate(-5deg); opacity: 1; } 100% { transform: translate(0,0) rotate(0); opacity: 1; } }`,
+                // Card 3: Top-right drop
+                `@keyframes proj3 { 0% { transform: translate(300px, -300px) rotate(30deg); opacity: 0; } 70% { transform: translate(-20px, 20px) rotate(-5deg); opacity: 1; } 100% { transform: translate(0,0) rotate(0); opacity: 1; } }`,
+                // Card 4: Bottom-right curve
+                `@keyframes proj4 { 0% { transform: translate(300px, 300px) rotate(-30deg); opacity: 0; } 70% { transform: translate(-20px, -20px) rotate(5deg); opacity: 1; } 100% { transform: translate(0,0) rotate(0); opacity: 1; } }`,
+                // Card 5: Center zoom rebound
+                `@keyframes proj5 { 0% { transform: scale(0) translateY(400px); opacity: 0; } 70% { transform: scale(1.1) translateY(-10px); opacity: 1; } 100% { transform: scale(1) translateY(0); opacity: 1; } }`
+            ];
+
+            const styleSheet = document.createElement('style');
+            styleSheet.innerText = keyframes.join('\n');
+            document.head.appendChild(styleSheet);
+
+            cardIds.forEach((id, idx) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.animation = `proj${idx + 1} 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${idx * 0.15}s forwards`;
+                }
+            });
+        }
+
+        /* =================================================================
+           5. DETAILED TUTORIAL DATASETS & CONTENT VIEWER MODAL
+        ================================================================== */
+        const pythonModules = {
+            1: {
+                title: "01 // INTRODUCTION TO PYTHON ARCHITECTURE",
+                badge: "LEVEL: BEGINNER TO HACKER",
+                badgeColor: "cyber-green",
+                html: `
+                    <div class="space-y-6">
+                        <div class="bg-gray-900/80 p-6 rounded-xl border border-cyber-green/40 shadow-[0_0_20px_rgba(0,255,102,0.15)]">
+                            <h3 class="text-xl font-header font-bold text-cyber-green mb-3">WHAT IS PYTHON & WHY DO HACKERS LOVE IT?</h3>
+                            <p class="text-sm leading-relaxed text-gray-300">
+                                Python is a high-level, interpreted, dynamically-typed programming language created by Guido van Rossum in 1991. In cybersecurity, ethical hacking, and artificial intelligence, Python is the undisputed sovereign language due to its minimalist syntax, rapid prototyping capabilities, and vast ecosystem of socket and exploit modules.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                                <h4 class="text-cyber-cyan font-bold text-sm mb-2"><i class="fa-solid fa-bolt mr-2"></i>Interpreted Engine</h4>
+                                <p class="text-xs text-gray-400">Python code is executed line-by-line by the Python Interpreter (CPython), eliminating heavy compile phases during security auditing.</p>
+                            </div>
+                            <div class="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                                <h4 class="text-cyber-pink font-bold text-sm mb-2"><i class="fa-solid fa-memory mr-2"></i>Dynamic Memory & Typing</h4>
+                                <p class="text-xs text-gray-400">Variables automatically infer types at runtime, managed by automatic garbage collection and reference counting.</p>
+                            </div>
+                        </div>
+
+                        <h3 class="text-lg font-header font-bold text-white pt-4">EXEMPLAR CODE SNIPPETS</h3>
+
+                        <!-- CODE BLOCK 1 -->
+                        <div class="bg-black rounded-lg border border-cyber-green/40 overflow-hidden">
+                            <div class="bg-gray-900 px-4 py-2 border-b border-gray-800 flex items-center justify-between text-xs text-cyber-green">
+                                <span>[ EXAMPLE 1.1: HELLO WORLD & SYSTEM DIAGNOSTICS ]</span>
+                                <button onclick="copyCode(this)" class="px-2 py-1 bg-cyber-green/20 hover:bg-cyber-green text-cyber-green hover:text-black rounded transition-all font-bold">
+                                    <i class="fa-regular fa-copy mr-1"></i> COPY CODE
+                                </button>
+                            </div>
+                            <pre class="p-4 text-xs font-code text-green-400 overflow-x-auto"><code># ==========================================
+# SYSTEM INITIALIZATION SCRIPT
+# ==========================================
+import sys
+import platform
+
+print("=== NEURAL TERMINAL ONLINE ===")
+print(f"Python Version: {sys.version}")
+print(f"OS Platform: {platform.system()} {platform.release()}")
+
+# Simple Hello World
+target_alias = "NEO_01"
+print("Welcome to Python World,", target_alias)</code></pre>
+                        </div>
+
+                        <!-- CODE BLOCK 2 -->
+                        <div class="bg-black rounded-lg border border-cyber-green/40 overflow-hidden">
+                            <div class="bg-gray-900 px-4 py-2 border-b border-gray-800 flex items-center justify-between text-xs text-cyber-green">
+                                <span>[ EXAMPLE 1.2: DYNAMIC TYPING & MEMORY POINTERS ]</span>
+                                <button onclick="copyCode(this)" class="px-2 py-1 bg-cyber-green/20 hover:bg-cyber-green text-cyber-green hover:text-black rounded transition-all font-bold">
+                                    <i class="fa-regular fa-copy mr-1"></i> COPY CODE
+                                </button>
+                            </div>
+                            <pre class="p-4 text-xs font-code text-green-400 overflow-x-auto"><code># Dynamic Variable Re-assignment
+data_payload = 1001                 # Integer
+print("Type:", type(data_payload), "Value:", data_payload)
+
+data_payload = "ENCRYPTED_STREAM"   # String
+print("Type:", type(data_payload), "Value:", data_payload)
+
+data_payload = [10.5, 99.9, 42.0]   # List of Floats
+print("Type:", type(data_payload), "Value:", data_payload)
+print("Memory Address Pointer:", id(data_payload))</code></pre>
+                        </div>
+                    </div>
+                `
+            },
+            2: {
+                title: "02 // TAKING INPUT & OUTPUT STREAMS",
+                badge: "LEVEL: CORE INPUT INTERFACES",
+                badgeColor: "cyber-cyan",
+                html: `
+                    <div class="space-y-6">
+                        <div class="bg-gray-900/80 p-6 rounded-xl border border-cyber-cyan/40 shadow-[0_0_20px_rgba(0,243,255,0.15)]">
+                            <h3 class="text-xl font-header font-bold text-cyber-cyan mb-3">CAPTURING INPUT & FORMATTED OUTPUT STREAMS</h3>
+                            <p class="text-sm leading-relaxed text-gray-300">
+                                Programs require user data. In Python, <code class="text-cyber-cyan bg-gray-950 px-1 rounded">input()</code> halts execution until the user presses Enter. Crucially, <code class="text-cyber-cyan">input()</code> ALWAYS returns a string! Type casting using <code class="text-cyber-green">int()</code>, <code class="text-cyber-green">float()</code>, or <code class="text-cyber-green">bool()</code> is essential for converting text into math-operable data.
+                            </p>
+                        </div>
+
+                        <!-- CODE BLOCK 1 -->
+                        <div class="bg-black rounded-lg border border-cyber-cyan/40 overflow-hidden">
+                            <div class="bg-gray-900 px-4 py-2 border-b border-gray-800 flex items-center justify-between text-xs text-cyber-cyan">
+                                <span>[ EXAMPLE 2.1: TYPE CASTING & USER PROMPTS ]</span>
+                                <button onclick="copyCode(this)" class="px-2 py-1 bg-cyber-cyan/20 hover:bg-cyber-cyan text-cyber-cyan hover:text-black rounded transition-all font-bold">
+                                    <i class="fa-regular fa-copy mr-1"></i> COPY CODE
+                                </button>
+                            </div>
+                            <pre class="p-4 text-xs font-code text-cyan-300 overflow-x-auto"><code># ==========================================
+# SECURE CREDENTIAL INPUT PROTOCOL
+# ==========================================
+
+username = input("Enter Operative Codename: ")
+access_level = int(input("Enter Security Level [1-10]: "))
+threat_ratio = float(input("Enter System Threat Index [0.0 - 1.0]: "))
+
+print("\n--- OPERATIVE HUD ---")
+print(f"Agent: {username}")
+print(f"Access Level Granted: {access_level} (Next Level: {access_level + 1})")
+print(f"System Threat Ratio: {threat_ratio * 100:.2f}%")</code></pre>
+                        </div>
+
+                        <!-- CODE BLOCK 2 -->
+                        <div class="bg-black rounded-lg border border-cyber-cyan/40 overflow-hidden">
+                            <div class="bg-gray-900 px-4 py-2 border-b border-gray-800 flex items-center justify-between text-xs text-cyber-cyan">
+                                <span>[ EXAMPLE 2.2: SPLITTING MULTIPLE INPUTS ON A SINGLE LINE ]</span>
+                                <button onclick="copyCode(this)" class="px-2 py-1 bg-cyber-cyan/20 hover:bg-cyber-cyan text-cyber-cyan hover:text-black rounded transition-all font-bold">
+                                    <i class="fa-regular fa-copy mr-1"></i> COPY CODE
+                                </button>
+                            </div>
+                            <pre class="p-4 text-xs font-code text-cyan-300 overflow-x-auto"><code># Enter multiple values separated by space: e.g. "8080 443 21"
+ports_raw = input("Enter target port numbers separated by space: ")
+
+# Splitting string into a list of strings
+port_list = ports_raw.split()
+print("Raw Port Strings:", port_list)
+
+# Converting all strings to integers using map()
+integer_ports = list(map(int, port_list))
+print("Active Integer Ports:", integer_ports)</code></pre>
+                        </div>
+                    </div>
+                `
+            },
+            3: {
+                title: "03 // MATHEMATICAL & LOGICAL OPERATORS",
+                badge: "LEVEL: ALGORITHMIC COMPUTATION",
+                badgeColor: "cyber-pink",
+                html: `
+                    <div class="space-y-6">
+                        <div class="bg-gray-900/80 p-6 rounded-xl border border-cyber-pink/40 shadow-[0_0_20px_rgba(255,0,127,0.15)]">
+                            <h3 class="text-xl font-header font-bold text-cyber-pink mb-3">ARITHMETIC, BITWISE & LOGIC PIPELINES</h3>
+                            <p class="text-sm leading-relaxed text-gray-300">
+                                Python provides full support for basic arithmetic, floor division (<code class="text-cyber-pink">//</code>), exponentiation (<code class="text-cyber-pink">**</code>), modulo (<code class="text-cyber-pink">%</code>), logical conditionals (<code class="text-cyber-pink">and</code>, <code class="text-cyber-pink">or</code>, <code class="text-cyber-pink">not</code>), and low-level bitwise manipulation essential for encryption and cryptography algorithms.
+                            </p>
+                        </div>
+
+                        <!-- CODE BLOCK 1 -->
+                        <div class="bg-black rounded-lg border border-cyber-pink/40 overflow-hidden">
+                            <div class="bg-gray-900 px-4 py-2 border-b border-gray-800 flex items-center justify-between text-xs text-cyber-pink">
+                                <span>[ EXAMPLE 3.1: FULL ARITHMETIC OPERATORS ]</span>
+                                <button onclick="copyCode(this)" class="px-2 py-1 bg-cyber-pink/20 hover:bg-cyber-pink text-cyber-pink hover:text-black rounded transition-all font-bold">
+                                    <i class="fa-regular fa-copy mr-1"></i> COPY CODE
+                                </button>
+                            </div>
+                            <pre class="p-4 text-xs font-code text-pink-300 overflow-x-auto"><code>a = 25
+b = 7
+
+print(f"Addition ({a} + {b})       : {a + b}")
+print(f"Subtraction ({a} - {b})    : {a - b}")
+print(f"Multiplication ({a} * {b}) : {a * b}")
+print(f"Float Division ({a} / {b}) : {a / b:.4f}")
+print(f"Floor Division ({a} // {b}): {a // b}") # Discards remainder
+print(f"Modulo Remainder ({a} % {b}): {a % b}") # Yields remainder
+print(f"Exponentiation ({a} ** 3)  : {a ** 3}") # 25^3</code></pre>
+                        </div>
+
+                        <!-- CODE BLOCK 2 -->
+                        <div class="bg-black rounded-lg border border-cyber-pink/40 overflow-hidden">
+                            <div class="bg-gray-900 px-4 py-2 border-b border-gray-800 flex items-center justify-between text-xs text-cyber-pink">
+                                <span>[ EXAMPLE 3.2: BITWISE OPERATORS & CIPHER MASKING ]</span>
+                                <button onclick="copyCode(this)" class="px-2 py-1 bg-cyber-pink/20 hover:bg-cyber-pink text-cyber-pink hover:text-black rounded transition-all font-bold">
+                                    <i class="fa-regular fa-copy mr-1"></i> COPY CODE
+                                </button>
+                            </div>
+                            <pre class="p-4 text-xs font-code text-pink-300 overflow-x-auto"><code># Bitwise operations (AND, OR, XOR, SHIFT)
+key = 0b11001100  # 204 in binary
+mask = 0b10101010 # 170 in binary
+
+print(f"Bitwise AND (&)  : {bin(key & mask)}")
+print(f"Bitwise OR  (|)  : {bin(key | mask)}")
+print(f"Bitwise XOR (^)  : {bin(key ^ mask)}") # Used in XOR Encryption!
+print(f"Left Shift  (<<) : {bin(key << 2)}")  # Multiplies by 2^2
+print(f"Right Shift (>>) : {bin(key >> 2)}")  # Divides by 2^2</code></pre>
+                        </div>
+                    </div>
+                `
+            },
+            4: {
+                title: "04 // LOOPING & ITERATION CONTROL",
+                badge: "LEVEL: RECURSIVE ENGINES",
+                badgeColor: "cyber-purple",
+                html: `
+                    <div class="space-y-6">
+                        <div class="bg-gray-900/80 p-6 rounded-xl border border-cyber-purple/40 shadow-[0_0_20px_rgba(188,19,254,0.15)]">
+                            <h3 class="text-xl font-header font-bold text-cyber-purple mb-3">ITERATIVE CONTROL FLOW</h3>
+                            <p class="text-sm leading-relaxed text-gray-300">
+                                Iteration powers automation. Python features <code class="text-cyber-purple">for</code> loops (for iterating over ranges and sequences) and <code class="text-cyber-purple">while</code> loops (for condition-driven loops). Control statements like <code class="text-cyber-green">break</code>, <code class="text-cyber-yellow">continue</code>, and <code class="text-cyber-pink">pass</code> regulate execution paths.
+                            </p>
+                        </div>
+
+                        <!-- CODE BLOCK 1 -->
+                        <div class="bg-black rounded-lg border border-cyber-purple/40 overflow-hidden">
+                            <div class="bg-gray-900 px-4 py-2 border-b border-gray-800 flex items-center justify-between text-xs text-cyber-purple">
+                                <span>[ EXAMPLE 4.1: FOR LOOPS & RANGE STEPPING ]</span>
+                                <button onclick="copyCode(this)" class="px-2 py-1 bg-cyber-purple/20 hover:bg-cyber-purple text-cyber-purple hover:text-black rounded transition-all font-bold">
+                                    <i class="fa-regular fa-copy mr-1"></i> COPY CODE
+                                </button>
+                            </div>
+                            <pre class="p-4 text-xs font-code text-purple-300 overflow-x-auto"><code># Range format: range(start, stop, step)
+print("=== PORT SCANNER SIMULATION ===")
+for port in range(80, 85, 1):
+    if port == 82:
+        print(f"Port {port}: CLOSED (Skipping...)")
+        continue # Skip rest of this loop iteration
+    if port == 84:
+        print(f"Port {port}: FIREWALL DETECTED (Aborting Scan!)")
+        break # Terminate loop completely
+    print(f"Port {port}: OPEN // LISTENING")</code></pre>
+                        </div>
+
+                        <!-- CODE BLOCK 2 -->
+                        <div class="bg-black rounded-lg border border-cyber-purple/40 overflow-hidden">
+                            <div class="bg-gray-900 px-4 py-2 border-b border-gray-800 flex items-center justify-between text-xs text-cyber-purple">
+                                <span>[ EXAMPLE 4.2: LIST COMPREHENSION (CYBER SHORTCUT) ]</span>
+                                <button onclick="copyCode(this)" class="px-2 py-1 bg-cyber-purple/20 hover:bg-cyber-purple text-cyber-purple hover:text-black rounded transition-all font-bold">
+                                    <i class="fa-regular fa-copy mr-1"></i> COPY CODE
+                                </button>
+                            </div>
+                            <pre class="p-4 text-xs font-code text-purple-300 overflow-x-auto"><code># Traditional loop vs List Comprehension
+raw_ip_suffixes = [1, 5, 10, 15, 20]
+
+# Generate active IP strings instantly
+active_ips = [f"192.168.1.{suffix}" for suffix in raw_ip_suffixes if suffix > 5]
+
+print("Filtered Active Subnet IPs:")
+print(active_ips)</code></pre>
+                        </div>
+                    </div>
+                `
+            },
+            5: {
+                title: "05 // BUILT-IN & CUSTOM FUNCTIONS",
+                badge: "LEVEL: ADVANCED MODULAR CODE",
+                badgeColor: "cyber-yellow",
+                html: `
+                    <div class="space-y-6">
+                        <div class="bg-gray-900/80 p-6 rounded-xl border border-cyber-yellow/40 shadow-[0_0_20px_rgba(255,230,0,0.15)]">
+                            <h3 class="text-xl font-header font-bold text-cyber-yellow mb-3">MODULAR FUNCTIONS, ARGS & LAMBDAS</h3>
+                            <p class="text-sm leading-relaxed text-gray-300">
+                                Functions promote reusability and keep code clean. Define functions using <code class="text-cyber-yellow">def</code>. Pass flexible positional (<code class="text-cyber-yellow">*args</code>) and keyword arguments (<code class="text-cyber-yellow">**kwargs</code>), or construct fast inline anonymous <code class="text-cyber-green">lambda</code> functions.
+                            </p>
+                        </div>
+
+                        <!-- CODE BLOCK 1 -->
+                        <div class="bg-black rounded-lg border border-cyber-yellow/40 overflow-hidden">
+                            <div class="bg-gray-900 px-4 py-2 border-b border-gray-800 flex items-center justify-between text-xs text-cyber-yellow">
+                                <span>[ EXAMPLE 5.1: CUSTOM FUNCTION WITH *ARGS AND **KWARGS ]</span>
+                                <button onclick="copyCode(this)" class="px-2 py-1 bg-cyber-yellow/20 hover:bg-cyber-yellow text-cyber-yellow hover:text-black rounded transition-all font-bold">
+                                    <i class="fa-regular fa-copy mr-1"></i> COPY CODE
+                                </button>
+                            </div>
+                            <pre class="p-4 text-xs font-code text-yellow-300 overflow-x-auto"><code># ==========================================
+# CYBER THREAT LOGGING ENGINE
+# ==========================================
+
+def log_threat_level(target, *flags, **metadata):
+    print(f"[*] Target Vector: {target}")
+    print(f"[*] Threat Flags Detected: {flags}")
+    print("[*] System Metadata:")
+    for key, value in metadata.items():
+        print(f"    - {key.upper()}: {value}")
+
+# Invoking Function with Dynamic Parameters
+log_threat_level(
+    "10.0.0.1", 
+    "PORT_SCAN", "SQL_INJECTION_ATTEMPT", "BRUTE_FORCE",
+    severity="CRITICAL", operative="VIDIT", node_id=9081
+)</code></pre>
+                        </div>
+
+                        <!-- CODE BLOCK 2 -->
+                        <div class="bg-black rounded-lg border border-cyber-yellow/40 overflow-hidden">
+                            <div class="bg-gray-900 px-4 py-2 border-b border-gray-800 flex items-center justify-between text-xs text-cyber-yellow">
+                                <span>[ EXAMPLE 5.2: LAMBDA EXPRESSIONS & MAP/FILTER ]</span>
+                                <button onclick="copyCode(this)" class="px-2 py-1 bg-cyber-yellow/20 hover:bg-cyber-yellow text-cyber-yellow hover:text-black rounded transition-all font-bold">
+                                    <i class="fa-regular fa-copy mr-1"></i> COPY CODE
+                                </button>
+                            </div>
+                            <pre class="p-4 text-xs font-code text-yellow-300 overflow-x-auto"><code># Quick inline Lambda Function
+encrypt_val = lambda x: (x * 7) ^ 0xFF
+
+data_stream = [12, 45, 68, 99]
+encrypted_stream = list(map(encrypt_val, data_stream))
+
+print("Original Stream :", data_stream)
+print("Encrypted Stream:", encrypted_stream)
+
+# Built-in High Utility Functions
+print("\nStream Stats -> Max:", max(data_stream), "| Min:", min(data_stream), "| Total Sum:", sum(data_stream))</code></pre>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        const readerModal = document.getElementById('readerModal');
+        const modalContent = document.getElementById('modalContent');
+        const modalHeaderTitle = document.getElementById('modalHeaderTitle');
+
+        function openModule(id) {
+            const mod = pythonModules[id];
+            if (!mod) return;
+
+            modalHeaderTitle.innerText = `[ PYTHON 3.12 TERMINAL // ${mod.title} ]`;
+            modalContent.innerHTML = `
+                <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                    <h2 class="font-header text-2xl md:text-3xl font-extrabold text-white">${mod.title}</h2>
+                    <span class="px-3 py-1 bg-gray-900 text-${mod.badgeColor} border border-${mod.badgeColor} rounded text-xs font-bold">${mod.badge}</span>
+                </div>
+                ${mod.html}
+            `;
+
+            readerModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModule() {
+            readerModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal on Escape key press
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModule();
+        });
+
+        /* =================================================================
+           6. COPY TO CLIPBOARD ENGINE WITH VISUAL FEEDBACK
+        ================================================================== */
+        function copyCode(buttonElement) {
+            const codeBlock = buttonElement.parentElement.nextElementSibling.querySelector('code');
+            if (!codeBlock) return;
+
+            const textToCopy = codeBlock.innerText;
+
+            // Reliable fallback clipboard copy mechanism
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                const originalText = buttonElement.innerHTML;
+                buttonElement.innerHTML = `<i class="fa-solid fa-check mr-1"></i> COPIED! ✓`;
+                buttonElement.classList.add('copy-success');
+
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalText;
+                    buttonElement.classList.remove('copy-success');
+                }, 2000);
+            } catch (err) {
+                console.error('Copy failed', err);
+            } finally {
+                document.body.removeChild(textArea);
+            }
+        }
+    </script>
+</body>
+</html>
